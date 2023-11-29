@@ -3,7 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${WXWIN}/include/",
+                "C:/Temp/wxWidgets/include/msvc"
             ],
             "defines": [
                 "_DEBUG",
