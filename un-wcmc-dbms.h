@@ -11,4 +11,15 @@ class UnWcmcDbms : public wxApp {
         virtual bool OnInit();
 };
 
+//classe pour la fenetre principale
+class TabFrame : public wxFrame {
+    public:
+        TabFrame(const wxString titre, int xpos, int ypos, int width, int height);
+
+        ~TabFrame();
+    private:
+        wxGrid *grid;
+        wxFile *file;
+};
+
 #endif
