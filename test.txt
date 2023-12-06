@@ -1,2 +1,0 @@
-Champ1	Champ2
-val1	val2

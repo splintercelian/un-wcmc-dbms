@@ -29,23 +29,22 @@ bool UnWcmcDbms::OnInit() {
 TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int height):wxFrame((wxFrame *) NULL, -1, titre, wxPoint(xpos, ypos), wxSize(width, height)) {
     //initialisation des pointeurs et variables
     grid = (wxGrid *) NULL;
-    const wxString nomFichier = "C:/Temp/un-wcmc-dbms/test.txt";
+    const wxString nomFichier = "C:/Temp/un-wcmc-dbms/data_wcmc.txt";
 
     //creation de l'instance de wxGrid
     grid = new wxGrid(this, -1, wxDefaultPosition, wxDefaultSize);
 
     //creation de la grille (la taille sera ajustee dynamiquement)
-    grid->CreateGrid(3, 3);
-    /*grid->SetCellValue(0, 0, "c1");
-    grid->SetCellValue(0, 1, "c2");
-    grid->SetCellValue(0, 2, "c3");
-    grid->SetCellValue(1, 0, "v1");
-    grid->SetCellValue(1, 1, "v2");
-    grid->SetCellValue(1, 2, "v3");*/
-
+    grid->CreateGrid(0, 0);
 
     //chargement des donnees
     LoadData(nomFichier);
+
+    //fait dodo
+    Sleep(1000);
+
+    //sauvegarde des donnees
+    SaveData(wxT("saveTest.txt"));
 }
 
 void TabFrame::LoadData(const wxString& nomFichier) {
@@ -63,6 +62,9 @@ void TabFrame::LoadData(const wxString& nomFichier) {
         //separation de la ligne lue en morceaux representant les differents champs de la table
         wxStringTokenizer tokenizer(ligne, "\t", wxTOKEN_RET_EMPTY);
 
+        //ajout d'une ligne dans la grille pour contenir les donnees de la ligne lue dans le fichier
+        grid->AppendRows();
+
         //initialisation d'une variable colonne pour lister les champs recuperes
         int col = 0;
 
@@ -70,25 +72,43 @@ void TabFrame::LoadData(const wxString& nomFichier) {
             //recuperation de la valeur du champ
             wxString token = tokenizer.GetNextToken();
 
+            //remplacement des guillemets par rien du tout
+            token.Replace(wxT("\""), wxT(""));
+
+            //ajout d'une colonne dans la grille pour contenir le champ si il s'agit de la premiere ligne
+            if(row == 0)
+                grid->AppendCols();
+
             //mise en place du champ dans la grille et passage au champ suivant
             grid->SetCellValue(row, col, token);
+
+            //passage a la colonne suivante
             col++;
         }
-
-        //verification de la taille de la grille et ajustement si necessaire (colonnes)
-        if(col > grid->GetNumberCols())
-            grid->AppendCols(col - grid->GetNumberCols());
 
         //passage a la ligne suivante
         row++;
     }
 
-    //verification de la taille de la grille et ajustement si necessaire (lignes)
-    if(row > grid->GetNumberRows())
-        grid->AppendRows(row - grid->GetNumberRows());
-
     //fermeture du fichier
     fichier.Close();
+}
+
+void TabFrame::SaveData(const wxString& nomFichier) {
+    int ligne = 0, colonne = 0;
+    wxString data = "";
+    wxTextFile fichier;
+    fichier.Create(nomFichier);
+    for(ligne = 0; ligne < grid->GetNumberRows(); ligne++) {
+        for(colonne = 0; colonne < grid->GetNumberCols(); colonne++) {
+            data += "\"" + grid->GetCellValue(ligne, colonne) + "\"";
+            if(colonne != grid->GetNumberCols() - 1)
+                data += "\t";
+        }
+        fichier.AddLine(data);
+        data = "";
+    }
+    fichier.Write();
 }
 
 TabFrame::~TabFrame() {}

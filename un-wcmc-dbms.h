@@ -16,6 +16,7 @@ class TabFrame : public wxFrame {
     public:
         TabFrame(const wxString titre, int xpos, int ypos, int width, int height);
         void LoadData(const wxString& nomFichier);
+        void SaveData(const wxString& nomFichier);
         ~TabFrame();
     private:
         wxGrid *grid;
