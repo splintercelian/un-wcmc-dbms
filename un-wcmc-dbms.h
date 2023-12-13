@@ -33,6 +33,12 @@ class TabFrame : public wxFrame {
         wxMenuBar *menuBar;
         wxMenu *fichierMenu;
         wxMenu *infoMenu;
+        wxRibbonBar *ribbonBar;
+        wxRibbonPage *dataRibbonPage;
+        wxRibbonPanel *dataRibbonPanel;
+        wxRibbonButtonBar *dataRibbonButtonBar;
+        wxSizer *sizer;
+
         //structure d'enumeration pour les identifiants des menus
         enum {
             ID_QUITTER = 100,

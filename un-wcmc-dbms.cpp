@@ -4,6 +4,10 @@
 #include <wx/grid.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
+#include <wx/ribbon/bar.h>
+#include <wx/ribbon/buttonbar.h>
+#include <wx/artprov.h>
+#include <wx/aui/aui.h>
 #include "un-wcmc-dbms.h"
 
 //macro qui remplace la fonction "main" en quelque sorte
@@ -14,7 +18,7 @@ bool UnWcmcDbms::OnInit() {
     //creation de l'instance de la fenetre principale
     const wxString Titre("UN World Conservation Monitoring Centre DBMS"); 
     
-    TabFrame *frame = new TabFrame(Titre, 50, 50, 450, 300);
+    TabFrame *frame = new TabFrame(Titre, 50, 50, 900, 700);
     
     //affichage du frame (la fenetre)
     frame->Show(TRUE);
@@ -26,11 +30,9 @@ bool UnWcmcDbms::OnInit() {
     return true;
 }
 
-TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int height):wxFrame((wxFrame *) NULL, -1, titre, wxPoint(xpos, ypos), wxSize(width, height)) {
+TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int height):wxFrame(
+                    (wxFrame *) NULL, -1, titre, wxPoint(xpos, ypos), wxSize(width, height), wxDEFAULT_FRAME_STYLE | wxSUNKEN_BORDER) {
     //initialisation des pointeurs et variables
-    grid = (wxGrid *) NULL;
-    menuBar = (wxMenuBar *) NULL;
-    fichierMenu = (wxMenu *) NULL;
     const wxString nomFichier;
 
     //creation de l'instance de wxGrid
@@ -54,6 +56,28 @@ TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int heig
     menuBar->Append(infoMenu, "&Info");
     //ajout de la barre de menu au cadre
     SetMenuBar(menuBar);
+
+    //creation du ruban d'actions
+    ribbonBar = new wxRibbonBar(this, -1, wxDefaultPosition, wxDefaultSize, wxRIBBON_BAR_DEFAULT_STYLE);
+    //creation des pages du ruban
+    dataRibbonPage = new wxRibbonPage(ribbonBar, wxID_ANY, wxT("Données"), wxNullBitmap);
+    //creation des sections a l'interieur des pages du ruban
+    dataRibbonPanel = new wxRibbonPanel(dataRibbonPage, wxID_ANY, wxT("Insertion"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    //creation des barres de bouton a l'interieur des sections
+    dataRibbonButtonBar = new wxRibbonButtonBar(dataRibbonPanel);
+    //ajout des boutons a l'interieur des barres
+    dataRibbonButtonBar->AddButton(wxID_ANY, wxT("Insérer à la fin"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    //activer le ruban
+    ribbonBar->Realize();
+
+    //creation du layout
+    sizer = new wxBoxSizer(wxVERTICAL);
+    //ajout du ruban dans le layout
+    sizer->Add(ribbonBar, 0, wxEXPAND);
+    //ajout du tableau dans le layout
+    sizer->Add(grid, 1, wxEXPAND);
+    //activation du layout
+    SetSizer(sizer);
 }
 
 TabFrame::~TabFrame() {}
@@ -146,26 +170,30 @@ END_EVENT_TABLE()
 
 //implementation des methodes de TabFrame liees aux differents menus
 void TabFrame::OnFichierOuvrir(wxCommandEvent &event) {
-    wxFileDialog *dlg = new wxFileDialog(this, "Ouvrir un fichier texte", "", "", "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_OPEN, wxDefaultPosition);
+    wxFileDialog *dlg = new wxFileDialog(this, "Ouvrir un fichier texte", "", "", 
+    "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_OPEN, wxDefaultPosition);
     if(dlg->ShowModal() == wxID_OK)
         LoadData(dlg->GetFilename());
     dlg->Destroy();
 }
 void TabFrame::OnFichierSauvegarder(wxCommandEvent &event) {
-    wxFileDialog *dlg = new wxFileDialog(this, "Sauvegarder un fichier texte", "", "", "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_SAVE, wxDefaultPosition);
+    wxFileDialog *dlg = new wxFileDialog(this, "Sauvegarder un fichier texte", "", "", 
+    "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_SAVE, wxDefaultPosition);
     if(dlg->ShowModal() == wxID_OK)
         SaveData(dlg->GetFilename());
     dlg->Destroy();
 }
 void TabFrame::OnFichierQuitter(wxCommandEvent &event) {
-    wxMessageDialog *dlg = new wxMessageDialog(this, "Voulez-vous vraiment quitter le programme?", "Boite de dialogue", wxYES_NO | wxNO_DEFAULT | wxCENTRE | wxICON_QUESTION, wxDefaultPosition);
+    wxMessageDialog *dlg = new wxMessageDialog(this, "Voulez-vous vraiment quitter le programme?", 
+    "Boite de dialogue", wxYES_NO | wxNO_DEFAULT | wxCENTRE | wxICON_QUESTION, wxDefaultPosition);
     if(dlg->ShowModal() == wxID_NO)
         return;
     else
         Close(FALSE);
 }
 void TabFrame::OnInfoApropos(wxCommandEvent &event) {
-    wxMessageDialog *dlg = new wxMessageDialog(this, "Gestionnaire de table de donnees basique", "Message", wxOK | wxCENTRE | wxICON_INFORMATION, wxDefaultPosition);
+    wxMessageDialog *dlg = new wxMessageDialog(this, "Gestionnaire de table de donnees basique", 
+    "Message", wxOK | wxCENTRE | wxICON_INFORMATION, wxDefaultPosition);
     dlg->ShowModal();
     dlg->Destroy();
 }
