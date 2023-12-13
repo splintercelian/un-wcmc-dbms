@@ -18,7 +18,8 @@ class TabFrame : public wxFrame {
         void LoadData(const wxString& nomFichier); //pour charger les donnees d'un fichier dans le tableur
         void SaveData(const wxString& nomFichier); //pour sauvegarder les donnees du tableur dans un fichier
         ~TabFrame(); //destructeur
-        //declaration des menus
+        
+        //MENUS
         //menu Fichier | Ouvrir
         void OnFichierOuvrir(wxCommandEvent &event);
         //menu Fichier | Sauvegarder
@@ -27,16 +28,56 @@ class TabFrame : public wxFrame {
         void OnFichierQuitter(wxCommandEvent &event);
         //menu Info | Apropos
         void OnInfoApropos(wxCommandEvent &event);
+
+        //RUBAN D'ACTION
+        //ruban Modifications | Insertion | InsererALaFin
+        void InsertDataEnd(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Insertion | InsererALaFin
+        void InsertDataBeg(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Insertion | InsererAuMilieu
+        void InsertDataMid(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Insertion | InsererAuMilieu
+        void InsertDataFile(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Suppression | SupprimerLigne
+        void DeleteDataLine(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Suppression | SupprimerBlocDeLignes
+        void DeleteDataBlock(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Selection | SelectionnerTout
+        void SelectAll(wxRibbonButtonBarEvent &event);
+        //ruban Modifications | Selection | SelectionnerTout
+        void DeselectAll(wxRibbonButtonBarEvent &event);
+        //ruban Recherches | Filtre | ParNom
+        void FilterByName(wxRibbonButtonBarEvent &event);
+        //ruban Recherches | Filtre | ParAnnee
+        void FilterByYear(wxRibbonButtonBarEvent &event);
+        //ruban Recherches | Filtre | ParPays
+        void FilterByCountry(wxRibbonButtonBarEvent &event);
+        //ruban Recherches | Filtre | Defiltrer
+        void Unfilter(wxRibbonButtonBarEvent &event);
     private:
+        //general
         wxGrid *grid;
         wxFile *file;
+        
+        //menus
         wxMenuBar *menuBar;
         wxMenu *fichierMenu;
         wxMenu *infoMenu;
+        
+        //ruban d'actions
         wxRibbonBar *ribbonBar;
-        wxRibbonPage *dataRibbonPage;
-        wxRibbonPanel *dataRibbonPanel;
-        wxRibbonButtonBar *dataRibbonButtonBar;
+        wxRibbonPage *modRibbonPage;
+        wxRibbonPage *rechRibbonPage;
+        wxRibbonPanel *modInsertRibbonPanel;
+        wxRibbonPanel *modDeleteRibbonPanel;
+        wxRibbonPanel *modSelectRibbonPanel;
+        wxRibbonPanel *rechFilterRibbonPanel;
+        wxRibbonButtonBar *modInsertRibbonButtonBar;
+        wxRibbonButtonBar *modDeleteRibbonButtonBar;
+        wxRibbonButtonBar *modSelectRibbonButtonBar;
+        wxRibbonButtonBar *rechFilterRibbonButtonBar;
+        
+        //layout
         wxSizer *sizer;
 
         //structure d'enumeration pour les identifiants des menus
@@ -44,7 +85,19 @@ class TabFrame : public wxFrame {
             ID_QUITTER = 100,
             ID_OUVRIR,
             ID_SAUVEGARDER,
-            ID_APROPOS
+            ID_APROPOS,
+            ID_INSERT_END,
+            ID_INSERT_BEG,
+            ID_INSERT_MID,
+            ID_INSERT_FILE,
+            ID_DELETE_LINE,
+            ID_DELETE_BLOCK,
+            ID_SELECT_ALL,
+            ID_DESELECT_ALL,
+            ID_FILTER_NAME,
+            ID_FILTER_YEAR,
+            ID_FILTER_COUNTRY,
+            ID_FILTER_UNFILTER
         };
     protected:
         //declaration de la directive pour gerer les evenements via une table d'evenements

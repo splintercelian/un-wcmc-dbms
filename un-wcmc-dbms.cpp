@@ -7,7 +7,6 @@
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 #include <wx/artprov.h>
-#include <wx/aui/aui.h>
 #include "un-wcmc-dbms.h"
 
 //macro qui remplace la fonction "main" en quelque sorte
@@ -45,11 +44,11 @@ TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int heig
     fichierMenu = new wxMenu;
     infoMenu = new wxMenu;
     //affectation des id et libelles au differents menus
-    fichierMenu->Append(ID_OUVRIR, "&Ouvrir fichier");
-    fichierMenu->Append(ID_SAUVEGARDER, "&Sauvergarder fichier");
+    fichierMenu->Append(ID_OUVRIR, wxT("&Ouvrir fichier\tCtrl+O"));
+    fichierMenu->Append(ID_SAUVEGARDER, wxT("&Sauvergarder fichier\tCtrl+S"));
     fichierMenu->AppendSeparator();
-    fichierMenu->Append(ID_QUITTER, "&Quitter");
-    infoMenu->Append(ID_APROPOS, "&A propos");
+    fichierMenu->Append(ID_QUITTER, wxT("&Quitter\tCtrl+Q"));
+    infoMenu->Append(ID_APROPOS, wxT("&A propos\tCtrl+A"));
     //creation de la barre de menu et affectation des menus
     menuBar = new wxMenuBar;
     menuBar->Append(fichierMenu, "&Fichier");
@@ -60,13 +59,31 @@ TabFrame::TabFrame(const wxString titre, int xpos, int ypos, int width, int heig
     //creation du ruban d'actions
     ribbonBar = new wxRibbonBar(this, -1, wxDefaultPosition, wxDefaultSize, wxRIBBON_BAR_DEFAULT_STYLE);
     //creation des pages du ruban
-    dataRibbonPage = new wxRibbonPage(ribbonBar, wxID_ANY, wxT("Données"), wxNullBitmap);
+    modRibbonPage = new wxRibbonPage(ribbonBar, wxID_ANY, wxT("Modifications"), wxNullBitmap);
+    rechRibbonPage = new wxRibbonPage(ribbonBar, wxID_ANY, wxT("Recherches"), wxNullBitmap);
     //creation des sections a l'interieur des pages du ruban
-    dataRibbonPanel = new wxRibbonPanel(dataRibbonPage, wxID_ANY, wxT("Insertion"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    modInsertRibbonPanel = new wxRibbonPanel(modRibbonPage, wxID_ANY, wxT("Insertion"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    modDeleteRibbonPanel = new wxRibbonPanel(modRibbonPage, wxID_ANY, wxT("Suppression"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    modSelectRibbonPanel = new wxRibbonPanel(modRibbonPage, wxID_ANY, wxT("Selection"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    rechFilterRibbonPanel = new wxRibbonPanel(rechRibbonPage, wxID_ANY, wxT("Filtre"), wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_NO_AUTO_MINIMISE);
     //creation des barres de bouton a l'interieur des sections
-    dataRibbonButtonBar = new wxRibbonButtonBar(dataRibbonPanel);
+    modInsertRibbonButtonBar = new wxRibbonButtonBar(modInsertRibbonPanel);
+    modDeleteRibbonButtonBar = new wxRibbonButtonBar(modDeleteRibbonPanel);
+    modSelectRibbonButtonBar = new wxRibbonButtonBar(modSelectRibbonPanel);
+    rechFilterRibbonButtonBar = new wxRibbonButtonBar(rechFilterRibbonPanel);
     //ajout des boutons a l'interieur des barres
-    dataRibbonButtonBar->AddButton(wxID_ANY, wxT("Insérer à la fin"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modInsertRibbonButtonBar->AddButton(ID_INSERT_END, wxT("fin"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modInsertRibbonButtonBar->AddButton(ID_INSERT_BEG, wxT("début"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modInsertRibbonButtonBar->AddButton(ID_INSERT_MID, wxT("curseur"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modInsertRibbonButtonBar->AddButton(ID_INSERT_FILE, wxT("fichier"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize));
+    modDeleteRibbonButtonBar->AddButton(ID_DELETE_LINE, wxT("ligne"), wxArtProvider::GetBitmap(wxART_DEL_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modDeleteRibbonButtonBar->AddButton(ID_DELETE_BLOCK, wxT("bloc"), wxArtProvider::GetBitmap(wxART_DEL_BOOKMARK, wxART_TOOLBAR, wxDefaultSize));
+    modSelectRibbonButtonBar->AddButton(ID_SELECT_ALL, wxT("sél. tout"), wxArtProvider::GetBitmap(wxART_PLUS, wxART_TOOLBAR, wxDefaultSize));
+    modSelectRibbonButtonBar->AddButton(ID_DESELECT_ALL, wxT("désél. tout"), wxArtProvider::GetBitmap(wxART_MINUS, wxART_TOOLBAR, wxDefaultSize));
+    rechFilterRibbonButtonBar->AddButton(ID_FILTER_NAME, wxT("par nom"), wxArtProvider::GetBitmap(wxART_FIND, wxART_TOOLBAR, wxDefaultSize));
+    rechFilterRibbonButtonBar->AddButton(ID_FILTER_YEAR, wxT("par année"), wxArtProvider::GetBitmap(wxART_FIND, wxART_TOOLBAR, wxDefaultSize));
+    rechFilterRibbonButtonBar->AddButton(ID_FILTER_COUNTRY, wxT("par pays"), wxArtProvider::GetBitmap(wxART_FIND, wxART_TOOLBAR, wxDefaultSize));
+    rechFilterRibbonButtonBar->AddButton(ID_FILTER_UNFILTER, wxT("défiltrer"), wxArtProvider::GetBitmap(wxART_CROSS_MARK, wxART_TOOLBAR, wxDefaultSize));
     //activer le ruban
     ribbonBar->Realize();
 
@@ -166,6 +183,18 @@ BEGIN_EVENT_TABLE(TabFrame, wxFrame)
     EVT_MENU(ID_SAUVEGARDER, TabFrame::OnFichierSauvegarder)
     EVT_MENU(ID_QUITTER, TabFrame::OnFichierQuitter)
     EVT_MENU(ID_APROPOS, TabFrame::OnInfoApropos)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_INSERT_END, TabFrame::InsertDataEnd)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_INSERT_BEG, TabFrame::InsertDataBeg)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_INSERT_MID, TabFrame::InsertDataMid)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_INSERT_FILE, TabFrame::InsertDataFile)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_DELETE_LINE, TabFrame::DeleteDataLine)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_DELETE_BLOCK, TabFrame::DeleteDataBlock)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_SELECT_ALL, TabFrame::SelectAll)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_DESELECT_ALL, TabFrame::DeselectAll)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_NAME, TabFrame::FilterByName)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_YEAR, TabFrame::FilterByYear)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_COUNTRY, TabFrame::FilterByCountry)
+    EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_UNFILTER, TabFrame::Unfilter)
 END_EVENT_TABLE()
 
 //implementation des methodes de TabFrame liees aux differents menus
@@ -196,4 +225,75 @@ void TabFrame::OnInfoApropos(wxCommandEvent &event) {
     "Message", wxOK | wxCENTRE | wxICON_INFORMATION, wxDefaultPosition);
     dlg->ShowModal();
     dlg->Destroy();
+}
+
+//implementation des methodes de TabFrame liees au ruban d'actions
+void TabFrame::InsertDataEnd(wxRibbonButtonBarEvent &event) {
+    grid->AppendRows();
+}
+void TabFrame::InsertDataBeg(wxRibbonButtonBarEvent &event) {
+    grid->InsertRows();
+}
+void TabFrame::InsertDataMid(wxRibbonButtonBarEvent &event) {
+    grid->InsertRows(grid->GetGridCursorRow());
+}
+void TabFrame::InsertDataFile(wxRibbonButtonBarEvent &event) {
+    wxFileDialog *dlg = new wxFileDialog(this, "Ouvrir un fichier texte", "", "", 
+    "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_OPEN, wxDefaultPosition);
+    if(dlg->ShowModal() == wxID_OK)
+        LoadData(dlg->GetFilename());
+    dlg->Destroy();
+}
+void TabFrame::DeleteDataLine(wxRibbonButtonBarEvent &event) {
+    grid->DeleteRows(grid->GetGridCursorRow());
+}
+void TabFrame::DeleteDataBlock(wxRibbonButtonBarEvent &event) {
+    wxArrayInt numRows = grid->GetSelectedRows();
+    grid->DeleteRows(grid->GetGridCursorRow(), numRows.Count());
+}
+void TabFrame::SelectAll(wxRibbonButtonBarEvent &event) {
+    grid->SelectAll();
+}
+void TabFrame::DeselectAll(wxRibbonButtonBarEvent &event) {
+    grid->ClearSelection();
+}
+void TabFrame::FilterByName(wxRibbonButtonBarEvent &event) {
+    wxString message;
+    int col = 0;
+    wxTextEntryDialog *dlg = new wxTextEntryDialog(this, wxT("Nom recherché : "), wxT("Entrez une valeur"));
+    if(dlg->ShowModal() == wxID_OK) {
+        message = dlg->GetValue();
+        for(int row = 0; row < grid->GetNumberRows(); row++) {
+            if(grid->GetCellValue(row, col) != message)
+                grid->HideRow(row);
+        }
+    }
+}
+void TabFrame::FilterByYear(wxRibbonButtonBarEvent &event) {
+    wxString message;
+    int col = 5;
+    wxTextEntryDialog *dlg = new wxTextEntryDialog(this, wxT("Année recherchée : "), wxT("Entrez une valeur"));
+    if(dlg->ShowModal() == wxID_OK) {
+        message = dlg->GetValue();
+        for(int row = 0; row < grid->GetNumberRows(); row++) {
+            if(grid->GetCellValue(row, col) != message)
+                grid->HideRow(row);
+        }
+    }
+}
+void TabFrame::FilterByCountry(wxRibbonButtonBarEvent &event) {
+    wxString message;
+    int col = 1;
+    wxTextEntryDialog *dlg = new wxTextEntryDialog(this, wxT("Pays recherché : "), wxT("Entrez une valeur"));
+    if(dlg->ShowModal() == wxID_OK) {
+        message = dlg->GetValue();
+        for(int row = 0; row < grid->GetNumberRows(); row++) {
+            if(grid->GetCellValue(row, col) != message)
+                grid->HideRow(row);
+        }
+    }
+}
+void TabFrame::Unfilter(wxRibbonButtonBarEvent &event) {
+    for(int row = 0; row < grid->GetNumberRows(); row++)
+            grid->ShowRow(row);
 }
