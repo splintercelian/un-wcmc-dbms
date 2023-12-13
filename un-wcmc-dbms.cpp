@@ -64,6 +64,10 @@ void TabFrame::LoadData(const wxString& nomFichier) {
     wxString ligne;
     int row = 0;
 
+    //si il existe deja des donnees dans la table on rajoute les nouvelles donnees a la suite
+    if(grid->GetNumberRows() > 0)
+        row = grid->GetNumberRows();
+
     //si le fichier ne s'ouvre pas -> envoi d'un message a l'utilisateur
     if(!fichier.Open()) {
         wxMessageBox("Impossible d'ouvrir le fichier", "Erreur", wxOK | wxICON_ERROR);
