@@ -34,13 +34,38 @@ Note that menu has submenus and ribbon has multiple pages that can contain multi
 The different functionalities will be presented below in a separate part.
 ### disclaimer
 It is by no means a robust application that can handle the different exceptions inherent to the use of this tool by anyone. If you intend to use the application in another context than the one it has been designed for (i.e. a poc), I will not necessarily provide assistance to make it work in your context of use. Furthermore, I will not be liable for any damages or losses that may arise from using this application.
-## command to compile with g++
-Assuming the project folder is in `C:\Temp` as well as *wxWidgets* folder (with source files and libraries[^1])<br>
-(note : if your structure is different you need to adapt the following command)
+## compiling source
+There are 2 ways to compile the source to create the application executable
+1. Compile directly in Windows command prompt (`cmd`) using below command (1st part)
+2. Compile with MSYS2 tools in Windows using the makefile provided in the repo
+
+Both methods assume the following :
+- you are on a MS Windows environment
+- you have downloaded and compiled the wxWidgets library at location `C:\Temp\wxWidgets`
+- you have cloned the repo or downloaded the source files in `C:\Temp\un-wcmc-dbms`
+
+If some of these assumptions is not true for you, you might have to adapt the commands or the makefile accordingly
+### command to compile with g++
+Based on comments from the previous section, for the first method you can just open a Windows command prompt and navigate to `C:\Temp\un-wcmc-dbms` using the `cd` command.<br>
+Here is the final command to do so
 ```
-g++ -o un-wcmc-dbms.exe un-wcmc-dbms.cpp -mthreads -DHAVE_W32API_H -D__WXMSW__ -DNDEBUG -D_UNICODE -IC:/Temp/wxWidgets/lib/gcc_dll/mswu -IC:/Temp/wxWidgets/include -DWXUSINGDLL -std=c++20 -mthreads -LC:/Temp/wxWidgets/lib/gcc_dll -mthreads -LC:/Temp/wxWidgets/lib/gcc_dll -lwxmsw32u_richtext -lwxmsw32u_xrc -lwxmsw32u_aui -lwxmsw32u_html -lwxmsw32u_adv -lwxmsw32u_core -lwxbase32u_xml -lwxbase32u_net -lwxbase32u -lwxscintilla -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregexu -lwxexpat -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwxregexu -lwinspool -lwinmm -lshell32 -lcomctl32 -lversion -lshlwapi -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -luxtheme -loleacc -lwxmsw32u_ribbon 
+cd C:\Temp\un-wcmc-dbms
 ```
+Once done, you can copy-paste the following one liner and execute
+```
+g++ -o un-wcmc-dbms.exe un-wcmc-dbms.cpp -IC:/Temp/wxWidgets/lib/gcc_dll/mswu -IC:/Temp/wxWidgets/include -LC:/Temp/wxWidgets/lib/gcc_dll -mthreads -DHAVE_W32API_H -D__WXMSW__ -DNDEBUG -D_UNICODE -DWXUSINGDLL -std=c++20 -mthreads -lwxmsw32u_richtext -lwxmsw32u_xrc -lwxmsw32u_aui -lwxmsw32u_html -lwxmsw32u_adv -lwxmsw32u_core -lwxbase32u_xml -lwxbase32u_net -lwxbase32u -lwxscintilla -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregexu -lwxexpat -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lversion -lshlwapi -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -luxtheme -loleacc -lwxmsw32u_ribbon
+```
+After that you should have "*un-wcmc-dbms.exe*" file in the current working directory. You can confirm that using `dir` command.<br>
+This file is the executable to launch the application.
 [^1]: in order to have the libraries in *wxWidgets* folder you need to compile the wxWidgets source codes with the help of the documentation provided in that same *wxWidgets* folder.
+### compile with makefile and MSYS2
+This method will assume one more thing : you have installed *MSYS2* tools and you are able to launch a *MSYS2 MinGW x64 (or x32)* console. If that is not the case you can visit this [link](https://www.msys2.org/docs/installer/) and read on how to install the tool<br>
+Once or if you have it installed then all you have to do is launch a console and follow these 3 steps :
+1. go to `C:\Temp\un-wcmc-dbms` directory using `cd` command
+2. type command `make clean` just to make sure to delete all `.exe` and `.o` files
+3. finally just type `make` in the console and execute
+
+This will create a *un-wcmc-dbms.exe* file in the folder of the same name. Fire up this file and the application should start.
 ## functionalities
 Here I will present the different functionalities of the app.
 ### Load a database file (tab separated text file with quotes encapsulated fields)
