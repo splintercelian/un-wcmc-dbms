@@ -54,6 +54,8 @@ class TabFrame : public wxFrame {
         void FilterByCountry(wxRibbonButtonBarEvent &event);
         //ruban Recherches | Filtre | Defiltrer
         void Unfilter(wxRibbonButtonBarEvent &event);
+        //ruban Defaut | Aide | AfficherAide
+        void GetHelp(wxRibbonBarEvent &event);
     private:
         //general
         wxGrid *grid;

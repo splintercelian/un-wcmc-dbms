@@ -7,6 +7,7 @@
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 #include <wx/artprov.h>
+#include <wx/utils.h>
 #include "un-wcmc-dbms.h"
 
 //macro qui remplace la fonction "main" en quelque sorte
@@ -17,7 +18,7 @@ bool UnWcmcDbms::OnInit() {
     //creation de l'instance de la fenetre principale
     const wxString Titre("UN World Conservation Monitoring Centre DBMS"); 
     
-    TabFrame *frame = new TabFrame(Titre, 50, 50, 900, 700);
+    TabFrame *frame = new TabFrame(Titre, 50, 50, 1200, 700);
     
     //affichage du frame (la fenetre)
     frame->Show(TRUE);
@@ -105,7 +106,7 @@ void TabFrame::LoadData(const wxString& nomFichier) {
     wxString ligne;
     int row = 0;
 
-    //si il existe deja des donnees dans la table on rajoute les nouvelles donnees a la suite
+    //si il existe deja des donnees dans la table -> ajout des nouvelles donnees a la suite
     if(grid->GetNumberRows() > 0)
         row = grid->GetNumberRows();
 
@@ -135,8 +136,30 @@ void TabFrame::LoadData(const wxString& nomFichier) {
             token.Replace(wxT("\""), wxT(""));
 
             //ajout d'une colonne dans la grille pour contenir le champ, si il s'agit de la premiere ligne
-            if(row == 0)
+            if(row == 0) {
                 grid->AppendCols();
+                switch(col) {
+                    case 0 : 
+                        grid->SetColLabelValue(col, wxT("Nom"));
+                        grid->SetColSize(col, 400);
+                        break;
+                    case 1 :
+                        grid->SetColLabelValue(col, wxT("Pays"));
+                        break;
+                    case 2 :
+                        grid->SetColLabelValue(col, wxT("Latitude"));
+                        break;
+                    case 3 :
+                        grid->SetColLabelValue(col, wxT("Longitude"));
+                        break;
+                    case 4 :
+                        grid->SetColLabelValue(col, wxT("Superficie"));
+                        break;
+                    case 5 :
+                        grid->SetColLabelValue(col, wxT("Année"));
+                        break;
+                }
+            }
 
             //mise en place du champ dans la grille et passage au champ suivant
             grid->SetCellValue(row, col, token);
@@ -195,6 +218,7 @@ BEGIN_EVENT_TABLE(TabFrame, wxFrame)
     EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_YEAR, TabFrame::FilterByYear)
     EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_COUNTRY, TabFrame::FilterByCountry)
     EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_UNFILTER, TabFrame::Unfilter)
+    EVT_RIBBONBAR_HELP_CLICK(wxID_ANY, TabFrame::GetHelp)
 END_EVENT_TABLE()
 
 //implementation des methodes de TabFrame liees aux differents menus
@@ -296,4 +320,7 @@ void TabFrame::FilterByCountry(wxRibbonButtonBarEvent &event) {
 void TabFrame::Unfilter(wxRibbonButtonBarEvent &event) {
     for(int row = 0; row < grid->GetNumberRows(); row++)
             grid->ShowRow(row);
+}
+void TabFrame::GetHelp(wxRibbonBarEvent &event) {
+    wxLaunchDefaultBrowser(wxT("https://github.com/splintercelian/un-wcmc-dbms"));
 }
