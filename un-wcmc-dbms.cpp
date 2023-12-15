@@ -8,6 +8,7 @@
 #include <wx/ribbon/buttonbar.h>
 #include <wx/artprov.h>
 #include <wx/utils.h>
+#include <wx/regex.h>
 #include "un-wcmc-dbms.h"
 
 //macro qui remplace la fonction "main" en quelque sorte
@@ -219,21 +220,22 @@ BEGIN_EVENT_TABLE(TabFrame, wxFrame)
     EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_COUNTRY, TabFrame::FilterByCountry)
     EVT_RIBBONBUTTONBAR_CLICKED(ID_FILTER_UNFILTER, TabFrame::Unfilter)
     EVT_RIBBONBAR_HELP_CLICK(wxID_ANY, TabFrame::GetHelp)
+    EVT_HELP(wxID_ANY, TabFrame::GetHelp)
 END_EVENT_TABLE()
 
 //implementation des methodes de TabFrame liees aux differents menus
 void TabFrame::OnFichierOuvrir(wxCommandEvent &event) {
     wxFileDialog *dlg = new wxFileDialog(this, "Ouvrir un fichier texte", "", "", 
-    "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_OPEN, wxDefaultPosition);
+    "Fichiers Textes(*.txt)|*.txt|Tous les fichiers(*.*)|*.*", wxFD_OPEN, wxDefaultPosition);
     if(dlg->ShowModal() == wxID_OK)
-        LoadData(dlg->GetFilename());
+        LoadData(dlg->GetPath());
     dlg->Destroy();
 }
 void TabFrame::OnFichierSauvegarder(wxCommandEvent &event) {
     wxFileDialog *dlg = new wxFileDialog(this, "Sauvegarder un fichier texte", "", "", 
-    "Tous les fichiers(*.*)|*.*|Fichiers Textes(*.txt)|*.txt", wxFD_SAVE, wxDefaultPosition);
+    "Fichiers Textes(*.txt)|*.txt|Tous les fichiers(*.*)|*.*", wxFD_SAVE, wxDefaultPosition);
     if(dlg->ShowModal() == wxID_OK)
-        SaveData(dlg->GetFilename());
+        SaveData(dlg->GetPath());
     dlg->Destroy();
 }
 void TabFrame::OnFichierQuitter(wxCommandEvent &event) {
@@ -296,12 +298,25 @@ void TabFrame::FilterByName(wxRibbonButtonBarEvent &event) {
 void TabFrame::FilterByYear(wxRibbonButtonBarEvent &event) {
     wxString message;
     int col = 5;
-    wxTextEntryDialog *dlg = new wxTextEntryDialog(this, wxT("Année recherchée : "), wxT("Entrez une valeur"));
+    wxTextEntryDialog *dlg = new wxTextEntryDialog(this, wxT("Année(s) recherchée(s) : \n(format pour une plage = aaaa-aaaa)"), wxT("Entrez une valeur ou une plage"));
     if(dlg->ShowModal() == wxID_OK) {
         message = dlg->GetValue();
-        for(int row = 0; row < grid->GetNumberRows(); row++) {
-            if(grid->GetCellValue(row, col) != message)
-                grid->HideRow(row);
+        if(message.Contains(wxT("-"))) {
+            wxRegEx rx("([0-9]{4})-([0-9]{4})", wxRE_ADVANCED);
+            if(rx.IsValid()) {
+                if(rx.Matches(message)) {
+                    for(int row = 0; row < grid->GetNumberRows(); row++) {
+                        if(grid->GetCellValue(row, col) < rx.GetMatch(message, 1) || grid->GetCellValue(row, col) > rx.GetMatch(message, 2))
+                            grid->HideRow(row);
+                    }
+                }
+            }
+        }
+        else {
+            for(int row = 0; row < grid->GetNumberRows(); row++) {
+                if(grid->GetCellValue(row, col) != message)
+                    grid->HideRow(row);
+            }
         }
     }
 }
@@ -322,5 +337,8 @@ void TabFrame::Unfilter(wxRibbonButtonBarEvent &event) {
             grid->ShowRow(row);
 }
 void TabFrame::GetHelp(wxRibbonBarEvent &event) {
-    wxLaunchDefaultBrowser(wxT("https://github.com/splintercelian/un-wcmc-dbms"));
+    wxLaunchDefaultBrowser(wxT("https://github-com.translate.goog/splintercelian/un-wcmc-dbms?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr&_x_tr_pto=wapp"));
+}
+void TabFrame::GetHelp(wxHelpEvent &event) {
+    wxLaunchDefaultBrowser(wxT("https://github-com.translate.goog/splintercelian/un-wcmc-dbms?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr&_x_tr_pto=wapp"));
 }

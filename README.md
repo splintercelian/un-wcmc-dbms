@@ -21,7 +21,7 @@ Fields are as follows :
 * **third field**   : area latitude
 * **fourth field** : area longitude
 * **fifth field** : area size
-* **sixth field** : area year (as a protected area)
+* **sixth field** : area registered year (as a protected area)
 ### Overview of the application
 ![App overview](Screenshots/AppOverviewScrnsht.png)<br><br>
 As it can be seen on the screenshot above the application is composed of the following structure (from top to bottom):
@@ -51,7 +51,7 @@ Here is the final command to do so
 ```
 cd C:\Temp\un-wcmc-dbms
 ```
-Once done, you can copy-paste the following one liner and execute
+Once done, you can copy-paste the following command and execute
 ```
 g++ -o un-wcmc-dbms.exe un-wcmc-dbms.cpp -IC:/Temp/wxWidgets/lib/gcc_dll/mswu -IC:/Temp/wxWidgets/include -LC:/Temp/wxWidgets/lib/gcc_dll -mthreads -DHAVE_W32API_H -D__WXMSW__ -DNDEBUG -D_UNICODE -DWXUSINGDLL -std=c++20 -mthreads -lwxmsw32u_richtext -lwxmsw32u_xrc -lwxmsw32u_aui -lwxmsw32u_html -lwxmsw32u_adv -lwxmsw32u_core -lwxbase32u_xml -lwxbase32u_net -lwxbase32u -lwxscintilla -lwxtiff -lwxjpeg -lwxpng -lwxzlib -lwxregexu -lwxexpat -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lwinspool -lwinmm -lshell32 -lcomctl32 -lversion -lshlwapi -lole32 -loleaut32 -luuid -lrpcrt4 -ladvapi32 -lwsock32 -luxtheme -loleacc -lwxmsw32u_ribbon
 ```
@@ -59,7 +59,7 @@ After that you should have "*un-wcmc-dbms.exe*" file in the current working dire
 This file is the executable to launch the application.
 [^1]: in order to have the libraries in *wxWidgets* folder you need to compile the wxWidgets source codes with the help of the documentation provided in that same *wxWidgets* folder.
 ### compile with makefile and MSYS2
-This method will assume one more thing : you have installed *MSYS2* tools and you are able to launch a *MSYS2 MinGW x64 (or x32)* console. If that is not the case you can visit this [link](https://www.msys2.org/docs/installer/) and read on how to install the tool<br>
+This method will assume one more thing : you have installed *MSYS2* tools and you are able to launch a *MSYS2 MinGW x64 (or x32)* console. If that is not the case you can visit this [link](https://www.msys2.org/docs/installer/) and read on how to install the tool.<br>
 Once or if you have it installed then all you have to do is launch a console and follow these 3 steps :
 1. go to `C:\Temp\un-wcmc-dbms` directory using `cd` command
 2. type command `make clean` just to make sure to delete all `.exe` and `.o` files
